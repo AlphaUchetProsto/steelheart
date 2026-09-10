@@ -48,6 +48,26 @@ class FieldSyncService
     }
 
     /**
+     * ID договора из штатного поля (после чтения актуального item).
+     */
+    public function resolveNativeContractId(int $entityTypeId, int $itemId): ?int
+    {
+        $pair = Module::getFieldPair($entityTypeId);
+        if (!$pair || !$this->isPairConfigured($pair)) {
+            return null;
+        }
+
+        $item = $this->crmItemProvider->getItem($entityTypeId, $itemId);
+        if (!$item) {
+            return null;
+        }
+
+        $nativeKey = $this->resolveItemFieldKey($item, $pair->native);
+
+        return $this->normalizeContractId($item[$nativeKey] ?? null);
+    }
+
+    /**
      * Поля для записи из UI: кастомное + штатное (одно значение).
      *
      * @return array<string, string>

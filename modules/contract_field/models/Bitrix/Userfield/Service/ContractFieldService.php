@@ -7,7 +7,6 @@ use app\modules\contract_field\models\Bitrix\Userfield\Dto\PlacementOptionsDto;
 use app\modules\contract_field\models\Bitrix\Userfield\Mapper\PlacementOptionsMapper;
 use app\modules\contract_field\models\Bitrix\Userfield\Provider\ContractProvider;
 use app\modules\contract_field\models\Bitrix\Userfield\Provider\CrmItemProvider;
-use app\modules\contract_field\models\Bitrix\Userfield\Service\FieldSyncService;
 use app\modules\contract_field\Module;
 
 class ContractFieldService
@@ -15,15 +14,18 @@ class ContractFieldService
     private PlacementOptionsMapper $placementOptionsMapper;
     private ContractProvider $contractProvider;
     private CrmItemProvider $crmItemProvider;
+    private FieldSyncService $fieldSyncService;
 
     public function __construct(
         PlacementOptionsMapper $placementOptionsMapper,
         ContractProvider $contractProvider,
-        CrmItemProvider $crmItemProvider
+        CrmItemProvider $crmItemProvider,
+        FieldSyncService $fieldSyncService
     ) {
         $this->placementOptionsMapper = $placementOptionsMapper;
         $this->contractProvider = $contractProvider;
         $this->crmItemProvider = $crmItemProvider;
+        $this->fieldSyncService = $fieldSyncService;
     }
 
     public function buildStateFromPlacementJson(?string $placementOptionsJson): ContractFieldStateDto
@@ -46,12 +48,16 @@ class ContractFieldService
             }
 
             if ($state->entityTypeId) {
-                $syncService = new FieldSyncService($this->crmItemProvider);
-                $state->itemFieldName = $syncService->toCrmItemFieldName($placement->fieldName);
+                $state->itemFieldName = $this->fieldSyncService->toCrmItemFieldName($placement->fieldName);
 
                 $pair = Module::getFieldPair($state->entityTypeId);
                 if ($pair && $pair->native !== '') {
-                    $state->nativeFieldName = $syncService->toCrmItemFieldName($pair->native);
+                    $state->nativeFieldName = $this->fieldSyncService->toCrmItemFieldName($pair->native);
+                }
+
+                // 1С может не слать CRM-событие — выравниваем при открытии поля
+                if ($placement->entityValueId > 0) {
+                    $this->fieldSyncService->syncFromNative($state->entityTypeId, $placement->entityValueId);
                 }
             }
 
@@ -65,7 +71,18 @@ class ContractFieldService
 
             $state->contracts = $this->contractProvider->listByCompanyId($companyId);
 
-            $selectedId = $this->extractSelectedId($placement->value);
+            $selectedId = null;
+            if ($state->entityTypeId && $placement->entityValueId > 0) {
+                $selectedId = $this->fieldSyncService->resolveNativeContractId(
+                    $state->entityTypeId,
+                    $placement->entityValueId
+                );
+            }
+
+            if ($selectedId === null) {
+                $selectedId = $this->fieldSyncService->normalizeContractId($placement->value);
+            }
+
             if ($selectedId) {
                 foreach ($state->contracts as $contract) {
                     if ($contract->id === $selectedId) {
@@ -104,20 +121,5 @@ class ContractFieldService
         $companyId = (int)($item['companyId'] ?? 0);
 
         return $companyId > 0 ? $companyId : null;
-    }
-
-    private function extractSelectedId($value): ?int
-    {
-        if (is_array($value)) {
-            $value = reset($value);
-        }
-
-        if ($value === null || $value === '' || $value === false || $value === 'false') {
-            return null;
-        }
-
-        $id = (int)$value;
-
-        return $id > 0 ? $id : null;
     }
 }

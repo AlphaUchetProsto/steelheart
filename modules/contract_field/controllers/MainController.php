@@ -10,6 +10,7 @@ use app\modules\contract_field\models\Bitrix\Userfield\Provider\ContractProvider
 use app\modules\contract_field\models\Bitrix\Userfield\Provider\CrmItemProvider;
 use app\modules\contract_field\models\Bitrix\Userfield\Service\ContractFieldService;
 use app\modules\contract_field\models\Bitrix\Userfield\Service\EventHandlerService;
+use app\modules\contract_field\models\Bitrix\Userfield\Service\FieldSyncService;
 use Yii;
 use yii\web\Response;
 
@@ -42,10 +43,12 @@ class MainController extends BaseController
         $this->module->appConfig->load($post);
 
         $crmItemProvider = new CrmItemProvider($this->module->client);
+        $fieldSyncService = new FieldSyncService($crmItemProvider);
         $service = new ContractFieldService(
             new PlacementOptionsMapper(),
             new ContractProvider(new ContractMapper(), $crmItemProvider),
-            $crmItemProvider
+            $crmItemProvider,
+            $fieldSyncService
         );
 
         $placementOptions = $post['PLACEMENT_OPTIONS'] ?? null;
