@@ -13,8 +13,11 @@ if ($state->selectedContract) {
         ? $state->selectedContract->title
         : ('Договор #' . $state->selectedContract->id);
 }
+
+$frameHeight = $isEdit ? 36 : 18;
+$modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
 ?>
-<div class="contract-field">
+<div class="contract-field <?= $modeClass ?>" id="contract-field-root">
     <?php if ($state->error): ?>
         <div class="contract-field__error"><?= Html::encode($state->error) ?></div>
     <?php elseif ($isEdit): ?>
@@ -53,6 +56,28 @@ if ($state->selectedContract) {
 <script src="//api.bitrix24.com/api/v1/"></script>
 <script>
     BX24.init(function () {
+        var defaultHeight = <?= (int)$frameHeight ?>;
+
+        function resizeFrame() {
+            var root = document.getElementById('contract-field-root');
+            var height = defaultHeight;
+
+            if (root) {
+                height = Math.max(root.offsetHeight, defaultHeight);
+            }
+
+            BX24.resizeWindow('100%', height);
+        }
+
+        resizeFrame();
+        setTimeout(resizeFrame, 50);
+        setTimeout(function () {
+            if (typeof BX24.fitWindow === 'function') {
+                BX24.fitWindow();
+            }
+            resizeFrame();
+        }, 150);
+
         var select = document.getElementById('contract-field-select');
         if (!select) {
             return;
@@ -67,7 +92,6 @@ if ($state->selectedContract) {
         }
 
         function setFieldValue(value) {
-            // Пустая строка Битрикс часто игнорирует — для очистки передаём null
             var payload = value ? String(value) : null;
             BX24.placement.call('setValue', payload);
         }
@@ -75,6 +99,7 @@ if ($state->selectedContract) {
         select.addEventListener('change', function () {
             applyEmptyClass();
             setFieldValue(select.value);
+            resizeFrame();
         });
 
         applyEmptyClass();
