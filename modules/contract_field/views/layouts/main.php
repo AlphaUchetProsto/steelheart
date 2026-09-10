@@ -21,20 +21,24 @@ use yii\bootstrap5\Html;
             margin: 0;
             padding: 0;
             width: 100%;
+            height: auto;
             background: transparent !important;
-            font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: "OpenSans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 14px;
-            line-height: 18px;
-            color: #525c69;
+            line-height: 20px;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
             overflow: hidden;
         }
         .contract-field {
             width: 100%;
             box-sizing: border-box;
+            background: transparent;
         }
         .contract-field--view {
-            min-height: 18px;
-            padding: 0;
+            min-height: 20px;
+            display: flex;
+            align-items: center;
         }
         .contract-field--edit {
             min-height: 36px;
@@ -47,15 +51,30 @@ use yii\bootstrap5\Html;
         .contract-field__empty {
             color: #a8adb4;
             font-size: 14px;
-            line-height: 18px;
+            line-height: 20px;
             font-weight: 400;
         }
-        .contract-field__value {
-            color: #525c69;
+        /* Как ссылка на сущность CRM в карточке Битрикс */
+        .contract-field__link {
+            display: inline;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: #2067b0;
+            font: inherit;
             font-size: 14px;
-            line-height: 18px;
+            line-height: 20px;
             font-weight: 400;
+            text-align: left;
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            cursor: pointer;
             word-break: break-word;
+        }
+        .contract-field__link:hover {
+            color: #2067b0;
+            border-bottom-color: #2067b0;
         }
         .contract-field__control {
             width: 100%;
@@ -75,7 +94,7 @@ use yii\bootstrap5\Html;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23525c69' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center;
-            color: #525c69;
+            color: #333;
             font-family: inherit;
             font-size: 14px;
             line-height: 36px;

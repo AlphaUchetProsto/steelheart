@@ -2,11 +2,13 @@
 
 /** @var \app\modules\contract_field\models\Bitrix\Userfield\Dto\ContractFieldStateDto $state */
 
+use app\modules\contract_field\Module;
 use yii\helpers\Html;
 
 $isEdit = ($state->placement->mode ?? 'view') === 'edit';
 $selectedId = $state->selectedContract->id ?? null;
 $selectedTitle = null;
+$contractEntityTypeId = Module::CONTRACT_ENTITY_TYPE_ID;
 
 if ($state->selectedContract) {
     $selectedTitle = $state->selectedContract->title !== ''
@@ -14,7 +16,7 @@ if ($state->selectedContract) {
         : ('Договор #' . $state->selectedContract->id);
 }
 
-$frameHeight = $isEdit ? 36 : 18;
+$frameHeight = $isEdit ? 36 : 20;
 $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
 ?>
 <div class="contract-field <?= $modeClass ?>" id="contract-field-root">
@@ -45,8 +47,14 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
             </div>
         <?php endif; ?>
     <?php else: ?>
-        <?php if ($selectedTitle !== null): ?>
-            <div class="contract-field__value"><?= Html::encode($selectedTitle) ?></div>
+        <?php if ($selectedId && $selectedTitle !== null): ?>
+            <button
+                type="button"
+                class="contract-field__link"
+                id="contract-field-link"
+                data-entity-type-id="<?= (int)$contractEntityTypeId ?>"
+                data-id="<?= (int)$selectedId ?>"
+            ><?= Html::encode($selectedTitle) ?></button>
         <?php else: ?>
             <div class="contract-field__empty">не заполнено</div>
         <?php endif; ?>
@@ -57,26 +65,39 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
 <script>
     BX24.init(function () {
         var defaultHeight = <?= (int)$frameHeight ?>;
+        var contractEntityTypeId = <?= (int)$contractEntityTypeId ?>;
 
         function resizeFrame() {
             var root = document.getElementById('contract-field-root');
             var height = defaultHeight;
 
             if (root) {
-                height = Math.max(root.offsetHeight, defaultHeight);
+                var measured = Math.ceil(root.getBoundingClientRect().height);
+                height = Math.max(measured, defaultHeight);
             }
 
             BX24.resizeWindow('100%', height);
         }
 
         resizeFrame();
-        setTimeout(resizeFrame, 50);
-        setTimeout(function () {
-            if (typeof BX24.fitWindow === 'function') {
-                BX24.fitWindow();
-            }
-            resizeFrame();
-        }, 150);
+        setTimeout(resizeFrame, 30);
+        setTimeout(resizeFrame, 120);
+
+        var link = document.getElementById('contract-field-link');
+        if (link) {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                var id = link.getAttribute('data-id');
+                var entityTypeId = link.getAttribute('data-entity-type-id') || contractEntityTypeId;
+
+                if (!id) {
+                    return;
+                }
+
+                BX24.openPath('/crm/type/' + entityTypeId + '/details/' + id + '/');
+            });
+        }
 
         var select = document.getElementById('contract-field-select');
         if (!select) {
