@@ -22,7 +22,7 @@ use yii\bootstrap5\Html;
             padding: 0;
             width: 100%;
             height: auto;
-            background: transparent !important;
+            background: #f6fafb !important;
             font-family: "OpenSans", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 14px;
             line-height: 20px;
@@ -33,7 +33,7 @@ use yii\bootstrap5\Html;
         .contract-field {
             width: 100%;
             box-sizing: border-box;
-            background: transparent;
+            background: #f6fafb;
         }
         .contract-field--view {
             min-height: 20px;

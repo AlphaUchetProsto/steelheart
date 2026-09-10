@@ -94,7 +94,7 @@ class ContractFieldService
             $value = reset($value);
         }
 
-        if ($value === null || $value === '') {
+        if ($value === null || $value === '' || $value === false || $value === 'false') {
             return null;
         }
 

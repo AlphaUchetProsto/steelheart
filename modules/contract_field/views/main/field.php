@@ -113,8 +113,16 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
         }
 
         function setFieldValue(value) {
-            var payload = value ? String(value) : null;
-            BX24.placement.call('setValue', payload);
+            // Пустые '' / null Битрикс часто игнорирует (нет «изменения» в модели).
+            // Сначала пишем временное значение, затем очищаем через false и ''.
+            if (value === '' || value === null || value === undefined) {
+                BX24.placement.call('setValue', '0');
+                BX24.placement.call('setValue', false);
+                BX24.placement.call('setValue', '');
+                return;
+            }
+
+            BX24.placement.call('setValue', String(value));
         }
 
         select.addEventListener('change', function () {
