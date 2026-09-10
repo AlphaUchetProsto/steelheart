@@ -1,0 +1,152 @@
+body{
+    background: rgb(238, 242, 244) !important;
+}
+
+.toolbar{
+    padding: 10px !important;
+}
+
+.toolbar button{
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.wrapper-popup-product{
+    position: relative;
+}
+
+.popup-product{
+    position: absolute;
+    z-index: 6;
+    height: 200px;
+    box-shadow: 0 5px 20px 0 rgba(67, 89, 113, 0.12) !important;
+}
+
+.loader {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    border: 5px solid;
+    border-color: rgba(0, 0, 0, 0.05) rgba(0, 0, 0, 0.15) rgba(0, 0, 0, 0.25) rgba(0, 0, 0, 0.4);
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.popup-product-content{
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 5px;
+}
+
+.wp-loader{
+    position: absolute;
+    width: 100%;
+    z-index: -99999;
+}
+
+.wrapper-popup-content-row{
+    position: relative;
+    background: #fff !important;
+    z-index: 8;
+}
+
+.wpc-footer{
+    text-align: center;
+    padding-bottom: 7px;
+}
+
+.wpc-row-content-item{
+    background: #fff;
+}
+
+.wpc-row-content-item-content{
+    padding: 7px 5px;
+}
+
+.wpc-row-content-item-content h4, .wpc-row-content-item-content p{
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.wpc-row-content-item-content:hover, .wpc-row-content-item-active{
+    background: rgba(22, 2, 2, 0.03);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.wpc-row-content-item-content h4{
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.wpc-row-content-item-content p{
+    font-size: 11px;
+    color: #8b8b8b;
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(2, 2, 33, 0.15);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(2, 2, 33, 0.15);
+    border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(2, 2, 33, 0.15);
+    border-radius: 12px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+}
+
+.benchmarking-variations > thead > tr > th:first-child {
+    width: 40px !important;
+}
+
+.benchmarking-variations > tbody > tr > td:first-child, .product-variations > tbody > tr > td:first-child {
+    font-size: 18px;
+}
+
+.benchmarking-variations > tbody > tr > td:first-child:hover, .product-variations > tbody > tr > td:first-child:hover, .product-variations > tbody > tr > td:first-child:hover, .product-variations > tbody > tr > td:first-child:hover{
+    cursor: pointer;
+}
+
+.benchmarking-variations > tbody > tr > td:first-child > .fa-square-plus, .product-variations > tbody > tr > td:first-child > .fa-square-plus{
+    color: rgba(36, 147, 23, 0.61);
+}
+
+.benchmarking-variations > tbody > tr > td:first-child > .fa-square-plus:hover, .product-variations > tbody > tr > td:first-child > .fa-square-plus:hover{
+    color: rgba(36, 147, 23, 1);
+}
+
+.benchmarking-variations > tbody > tr > td:first-child > .fa-square-minus, .product-variations > tbody > tr > td:first-child > .fa-trash, .product-variations > tbody > tr > td:first-child > .fa-square-minus, .product-variations > tbody > tr > td:first-child > .fa-trash{
+    color: rgba(133, 11, 11, 0.61);
+}
+
+.benchmarking-variations > tbody > tr > td:first-child > .fa-square-minus:hover, .product-variations > tbody > tr > td:first-child > .fa-trash:hover, .product-variations > tbody > tr > td:first-child > .fa-square-minus:hover, .product-variations > tbody > tr > td:first-child > .fa-trash:hover{
+    color: rgba(133, 11, 11, 1);
+}
+
+.price-field {
+    position: relative;
+}

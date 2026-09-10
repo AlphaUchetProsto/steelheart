@@ -1,0 +1,32 @@
+[
+    {
+        "id": 4291,
+        "supplier": null,
+        "price": "235000.00",
+        "productName": "Шестерня 9277108 Liebherr",
+        "productRowId": 273,
+        "deliveryTime": "В наличии",
+        "source": "steel-heart.com",
+        "manufacturer": "Liebherr",
+        "status": null,
+        "weight": "0.00000000",
+        "typeDetailId": null,
+        "currency": "1",
+        "quantity": 0
+    },
+    {
+        "id": 4292,
+        "supplier": "Тест",
+        "price": "1000.00",
+        "productName": "Шестерня 9277108 Liebherr",
+        "productRowId": 273,
+        "deliveryTime": "15-25 рабочих дней",
+        "source": "База данных",
+        "manufacturer": "",
+        "status": "",
+        "weight": "25",
+        "typeDetailId": 2,
+        "currency": "3",
+        "quantity": 4
+    }
+]

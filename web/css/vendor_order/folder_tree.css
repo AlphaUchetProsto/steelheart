@@ -1,0 +1,23 @@
+.folder:hover, .wp-item-popup-product table tbody tr:hover{
+    cursor: pointer;
+}
+
+.tree-popup-product .card{
+    background: none !important;
+    padding: 0px 14px !important;
+    box-shadow: none !important;
+    border-left: 1px solid rgba(0, 0, 0, 0.176);
+    border-radius: 0 !important;
+    margin-left: 5px !important;
+}
+
+.tree-popup-product, .wp-item-popup-product{
+    max-height: 100vh;
+    overflow: auto;
+}
+
+.wp-item-popup-product table thead{
+    position: sticky;
+    top: 0;
+    background: #fff;
+}
