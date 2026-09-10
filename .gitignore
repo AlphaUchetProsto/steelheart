@@ -1,6 +1,9 @@
 # phpstorm project files
 .idea
 
+# cursor
+.cursor
+
 # netbeans project files
 nbproject
 
