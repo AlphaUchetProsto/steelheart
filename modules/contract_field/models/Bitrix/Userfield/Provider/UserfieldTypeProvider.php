@@ -26,6 +26,19 @@ class UserfieldTypeProvider
         ])->getFullResponse();
     }
 
+    public function update(string $userTypeId, string $handler, string $title, string $description = '', int $height = 80): array
+    {
+        return $this->client->api()->request('userfieldtype.update', [
+            'USER_TYPE_ID' => $userTypeId,
+            'HANDLER' => $handler,
+            'TITLE' => $title,
+            'DESCRIPTION' => $description,
+            'OPTIONS' => [
+                'height' => $height,
+            ],
+        ])->getFullResponse();
+    }
+
     public function list(): array
     {
         return $this->client->api()->request('userfieldtype.list')->getResponse();

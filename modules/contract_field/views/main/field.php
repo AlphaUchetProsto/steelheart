@@ -6,6 +6,13 @@ use yii\helpers\Html;
 
 $isEdit = ($state->placement->mode ?? 'view') === 'edit';
 $selectedId = $state->selectedContract->id ?? null;
+$selectedTitle = null;
+
+if ($state->selectedContract) {
+    $selectedTitle = $state->selectedContract->title !== ''
+        ? $state->selectedContract->title
+        : ('Договор #' . $state->selectedContract->id);
+}
 ?>
 <div class="contract-field">
     <?php if ($state->error): ?>
@@ -14,26 +21,32 @@ $selectedId = $state->selectedContract->id ?? null;
         <?php if (empty($state->contracts)): ?>
             <div class="contract-field__empty">Нет договоров, привязанных к компании</div>
         <?php else: ?>
-            <select id="contract-field-select">
-                <option value="">— не выбран —</option>
-                <?php foreach ($state->contracts as $contract): ?>
-                    <option
-                        value="<?= (int)$contract->id ?>"
-                        <?= $selectedId === $contract->id ? 'selected' : '' ?>
-                    >
-                        <?= Html::encode($contract->title !== '' ? $contract->title : ('Договор #' . $contract->id)) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <div class="contract-field__control">
+                <select
+                    id="contract-field-select"
+                    class="contract-field__select<?= $selectedId ? '' : ' is-empty' ?>"
+                >
+                    <option value="">не выбрано</option>
+                    <?php foreach ($state->contracts as $contract): ?>
+                        <?php
+                        $title = $contract->title !== '' ? $contract->title : ('Договор #' . $contract->id);
+                        ?>
+                        <option
+                            value="<?= (int)$contract->id ?>"
+                            <?= $selectedId === $contract->id ? 'selected' : '' ?>
+                        >
+                            <?= Html::encode($title) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
         <?php endif; ?>
     <?php else: ?>
-        <div class="contract-field__value">
-            <?php if ($state->selectedContract): ?>
-                <?= Html::encode($state->selectedContract->title !== '' ? $state->selectedContract->title : ('Договор #' . $state->selectedContract->id)) ?>
-            <?php else: ?>
-                <span class="contract-field__empty">Не выбран</span>
-            <?php endif; ?>
-        </div>
+        <?php if ($selectedTitle !== null): ?>
+            <div class="contract-field__value"><?= Html::encode($selectedTitle) ?></div>
+        <?php else: ?>
+            <div class="contract-field__empty">не заполнено</div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 
@@ -45,9 +58,25 @@ $selectedId = $state->selectedContract->id ?? null;
             return;
         }
 
+        function applyEmptyClass() {
+            if (select.value) {
+                select.classList.remove('is-empty');
+            } else {
+                select.classList.add('is-empty');
+            }
+        }
+
+        function setFieldValue(value) {
+            // Пустая строка Битрикс часто игнорирует — для очистки передаём null
+            var payload = value ? String(value) : null;
+            BX24.placement.call('setValue', payload);
+        }
+
         select.addEventListener('change', function () {
-            var value = select.value ? String(select.value) : '';
-            BX24.placement.call('setValue', value);
+            applyEmptyClass();
+            setFieldValue(select.value);
         });
+
+        applyEmptyClass();
     });
 </script>

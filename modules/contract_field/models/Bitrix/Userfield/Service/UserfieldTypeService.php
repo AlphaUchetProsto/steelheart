@@ -16,12 +16,47 @@ class UserfieldTypeService
 
     public function register(string $handler): array
     {
+        $title = 'Договор';
+        $description = 'Выбор договора, привязанного к компании';
+        $height = 39;
+
+        if ($this->isRegistered(Module::USER_TYPE_ID)) {
+            return $this->provider->update(
+                Module::USER_TYPE_ID,
+                $handler,
+                $title,
+                $description,
+                $height
+            );
+        }
+
         return $this->provider->add(
             Module::USER_TYPE_ID,
             $handler,
-            'Договор',
-            'Выбор договора, привязанного к компании',
-            90
+            $title,
+            $description,
+            $height
         );
+    }
+
+    private function isRegistered(string $userTypeId): bool
+    {
+        $list = $this->provider->list();
+
+        if (!is_array($list)) {
+            return false;
+        }
+
+        foreach ($list as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            if (($item['USER_TYPE_ID'] ?? null) === $userTypeId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
