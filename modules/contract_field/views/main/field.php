@@ -104,14 +104,25 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
         }
 
         function setFieldValue(value) {
-            if (value === '' || value === null || value === undefined) {
-                BX24.placement.call('setValue', '0');
-                BX24.placement.call('setValue', false);
-                BX24.placement.call('setValue', '');
-                return;
-            }
+            // В api.bitrix24.com/api/v1 BX24.placement.call делает:
+            //   (!!params ? JSON.stringify(params) : '')
+            // Поэтому '', false, null, 0 НЕ уходят в родителя — поле не очищается.
+            // Шлём setValue напрямую через postMessage с корректным JSON.
+            sendSetValue(value === '' || value === null || value === undefined ? '' : String(value));
+        }
 
-            BX24.placement.call('setValue', String(value));
+        function sendSetValue(value) {
+            var parts = (window.name || '').split('|');
+            var domain = (parts[0] || '').replace(/:(80|443)$/, '');
+            var protocol = parseInt(parts[1], 10) ? 's' : '';
+            var appSid = parts[2] || '';
+            var target = 'http' + protocol + '://' + domain;
+
+            // Формат как в BX24.sendMessage: command:jsonParams:callbackId:appSid
+            parent.postMessage(
+                'setValue:' + JSON.stringify(value) + '::' + appSid,
+                target
+            );
         }
 
         select.addEventListener('change', function () {
