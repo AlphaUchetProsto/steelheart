@@ -55,7 +55,7 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             </select>
         </div>
     <?php else: ?>
-        <div class="contract-field__view-row" id="contract-field-view">
+        <div class="contract-field__view-row" id="contract-field-view" title="Изменить">
             <?php if ($selectedId && $selectedTitle !== null): ?>
                 <button
                     type="button"
@@ -66,7 +66,6 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             <?php else: ?>
                 <span class="contract-field__empty" id="contract-field-empty">не заполнено</span>
             <?php endif; ?>
-            <button type="button" class="contract-field__edit-trigger" id="contract-field-start-edit">Изменить</button>
         </div>
 
         <div class="contract-field__inline-edit is-hidden" id="contract-field-inline-edit">
@@ -162,17 +161,16 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             return;
         }
 
-        // Режим просмотра: локальное изменение с подтверждением
+        // Режим просмотра: клик по полю (не по ссылке) → локальное изменение
         var viewRow = document.getElementById('contract-field-view');
         var inlineEdit = document.getElementById('contract-field-inline-edit');
-        var startEditBtn = document.getElementById('contract-field-start-edit');
         var saveBtn = document.getElementById('contract-field-save');
         var cancelBtn = document.getElementById('contract-field-cancel');
         var selectView = document.getElementById('contract-field-select-view');
         var inlineError = document.getElementById('contract-field-inline-error');
         var link = document.getElementById('contract-field-link');
 
-        if (!viewRow || !inlineEdit || !startEditBtn || !saveBtn || !cancelBtn || !selectView) {
+        if (!viewRow || !inlineEdit || !saveBtn || !cancelBtn || !selectView) {
             return;
         }
 
@@ -223,7 +221,7 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
                     currentLink.type = 'button';
                     currentLink.className = 'contract-field__link';
                     currentLink.id = 'contract-field-link';
-                    viewRow.insertBefore(currentLink, startEditBtn);
+                    viewRow.appendChild(currentLink);
                     currentLink.addEventListener('click', openContract);
                 }
                 currentLink.setAttribute('data-id', selectedId);
@@ -237,13 +235,14 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
                     span.className = 'contract-field__empty';
                     span.id = 'contract-field-empty';
                     span.textContent = 'не заполнено';
-                    viewRow.insertBefore(span, startEditBtn);
+                    viewRow.appendChild(span);
                 }
             }
         }
 
         function openContract(event) {
             event.preventDefault();
+            event.stopPropagation();
             var id = (event.currentTarget || link).getAttribute('data-id');
             if (!id) {
                 return;
@@ -255,18 +254,12 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             link.addEventListener('click', openContract);
         }
 
-        startEditBtn.addEventListener('click', function (event) {
-            event.preventDefault();
+        viewRow.addEventListener('click', function (event) {
+            if (event.target.closest && event.target.closest('.contract-field__link')) {
+                return;
+            }
             enterInlineEdit();
         });
-
-        var emptyClick = document.getElementById('contract-field-empty');
-        if (emptyClick) {
-            emptyClick.style.cursor = 'pointer';
-            emptyClick.addEventListener('click', function () {
-                enterInlineEdit();
-            });
-        }
 
         selectView.addEventListener('change', function () {
             applyEmptyClass(selectView);

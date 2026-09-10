@@ -57,6 +57,8 @@ use yii\bootstrap5\Html;
             align-items: center;
             gap: 10px;
             min-height: 20px;
+            width: 100%;
+            cursor: pointer;
         }
         .contract-field__link {
             display: inline;
@@ -77,24 +79,6 @@ use yii\bootstrap5\Html;
         }
         .contract-field__link:hover {
             border-bottom-color: #2067b0;
-        }
-        .contract-field__edit-trigger {
-            flex: 0 0 auto;
-            margin: 0;
-            padding: 0;
-            border: 0;
-            background: none;
-            color: #2067b0;
-            font: inherit;
-            font-size: 13px;
-            line-height: 20px;
-            cursor: pointer;
-            text-decoration: none;
-            border-bottom: 1px dashed #2067b0;
-            white-space: nowrap;
-        }
-        .contract-field__edit-trigger:hover {
-            border-bottom-style: solid;
         }
         .contract-field__control {
             width: 100%;
