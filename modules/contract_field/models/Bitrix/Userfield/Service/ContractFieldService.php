@@ -7,6 +7,8 @@ use app\modules\contract_field\models\Bitrix\Userfield\Dto\PlacementOptionsDto;
 use app\modules\contract_field\models\Bitrix\Userfield\Mapper\PlacementOptionsMapper;
 use app\modules\contract_field\models\Bitrix\Userfield\Provider\ContractProvider;
 use app\modules\contract_field\models\Bitrix\Userfield\Provider\CrmItemProvider;
+use app\modules\contract_field\models\Bitrix\Userfield\Service\FieldSyncService;
+use app\modules\contract_field\Module;
 
 class ContractFieldService
 {
@@ -38,9 +40,19 @@ class ContractFieldService
 
         try {
             if ($placement->entityId === 'CRM_COMPANY') {
-                $state->entityTypeId = 4;
+                $state->entityTypeId = Module::COMPANY_ENTITY_TYPE_ID;
             } else {
                 $state->entityTypeId = $this->crmItemProvider->resolveEntityTypeId($placement->entityId);
+            }
+
+            if ($state->entityTypeId) {
+                $syncService = new FieldSyncService($this->crmItemProvider);
+                $state->itemFieldName = $syncService->toCrmItemFieldName($placement->fieldName);
+
+                $pair = Module::getFieldPair($state->entityTypeId);
+                if ($pair && $pair->native !== '') {
+                    $state->nativeFieldName = $syncService->toCrmItemFieldName($pair->native);
+                }
             }
 
             $companyId = $this->resolveCompanyId($placement);

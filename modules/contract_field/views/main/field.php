@@ -10,6 +10,8 @@ $selectedId = $state->selectedContract->id ?? null;
 $selectedTitle = null;
 $contractEntityTypeId = Module::CONTRACT_ENTITY_TYPE_ID;
 $fieldName = $state->placement->fieldName ?? '';
+$itemFieldName = $state->itemFieldName !== '' ? $state->itemFieldName : $fieldName;
+$nativeFieldName = $state->nativeFieldName ?? '';
 $entityValueId = (int)($state->placement->entityValueId ?? 0);
 $entityTypeId = (int)($state->entityTypeId ?? 0);
 
@@ -38,6 +40,8 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
     id="contract-field-root"
     data-card-edit="<?= $isCardEdit ? '1' : '0' ?>"
     data-field-name="<?= Html::encode($fieldName) ?>"
+    data-item-field-name="<?= Html::encode($itemFieldName) ?>"
+    data-native-field-name="<?= Html::encode($nativeFieldName) ?>"
     data-entity-type-id="<?= $entityTypeId ?>"
     data-entity-value-id="<?= $entityValueId ?>"
     data-contract-entity-type-id="<?= (int)$contractEntityTypeId ?>"
@@ -93,6 +97,8 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
 
         var isCardEdit = root.getAttribute('data-card-edit') === '1';
         var fieldName = root.getAttribute('data-field-name') || '';
+        var itemFieldName = root.getAttribute('data-item-field-name') || fieldName;
+        var nativeFieldName = root.getAttribute('data-native-field-name') || '';
         var entityTypeId = parseInt(root.getAttribute('data-entity-type-id') || '0', 10);
         var entityValueId = parseInt(root.getAttribute('data-entity-value-id') || '0', 10);
         var contractEntityTypeId = parseInt(root.getAttribute('data-contract-entity-type-id') || '0', 10);
@@ -146,6 +152,15 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             sendSetValue(value === '' || value === null || value === undefined ? '' : String(value));
         }
 
+        function buildSaveFields(value) {
+            var fields = {};
+            fields[itemFieldName] = value;
+            if (nativeFieldName) {
+                fields[nativeFieldName] = value;
+            }
+            return fields;
+        }
+
         // Режим редактирования карточки: штатные Сохранить / Отменить
         if (isCardEdit) {
             var select = document.getElementById('contract-field-select');
@@ -156,6 +171,13 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             select.addEventListener('change', function () {
                 applyEmptyClass(select);
                 setFieldValue(select.value);
+                if (nativeFieldName && entityTypeId && entityValueId) {
+                    BX24.callMethod('crm.item.update', {
+                        entityTypeId: entityTypeId,
+                        id: entityValueId,
+                        fields: buildSaveFields(select.value)
+                    });
+                }
             });
             applyEmptyClass(select);
             return;
@@ -276,8 +298,7 @@ $renderSelectOptions = static function () use ($state, $selectedId) {
             }
 
             var value = selectView.value || '';
-            var fields = {};
-            fields[fieldName] = value;
+            var fields = buildSaveFields(value);
 
             saveBtn.disabled = true;
             cancelBtn.disabled = true;

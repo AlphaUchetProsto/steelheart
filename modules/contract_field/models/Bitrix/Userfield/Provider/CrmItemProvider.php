@@ -23,6 +23,15 @@ class CrmItemProvider
         return $result['item'] ?? [];
     }
 
+    public function updateItem(int $entityTypeId, int $id, array $fields): array
+    {
+        return $this->client->api()->request('crm.item.update', [
+            'entityTypeId' => $entityTypeId,
+            'id' => $id,
+            'fields' => $fields,
+        ])->getResponse();
+    }
+
     /**
      * @return array[]
      */
