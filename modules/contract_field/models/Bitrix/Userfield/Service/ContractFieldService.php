@@ -37,6 +37,12 @@ class ContractFieldService
         $state->placement = $placement;
 
         try {
+            if ($placement->entityId === 'CRM_COMPANY') {
+                $state->entityTypeId = 4;
+            } else {
+                $state->entityTypeId = $this->crmItemProvider->resolveEntityTypeId($placement->entityId);
+            }
+
             $companyId = $this->resolveCompanyId($placement);
             $state->companyId = $companyId;
 

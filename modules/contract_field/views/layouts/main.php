@@ -37,8 +37,6 @@ use yii\bootstrap5\Html;
         }
         .contract-field--view {
             min-height: 20px;
-            display: flex;
-            align-items: center;
         }
         .contract-field--edit {
             min-height: 36px;
@@ -53,6 +51,12 @@ use yii\bootstrap5\Html;
             font-size: 14px;
             line-height: 20px;
             font-weight: 400;
+        }
+        .contract-field__view-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 20px;
         }
         .contract-field__link {
             display: inline;
@@ -72,8 +76,25 @@ use yii\bootstrap5\Html;
             word-break: break-word;
         }
         .contract-field__link:hover {
-            color: #2067b0;
             border-bottom-color: #2067b0;
+        }
+        .contract-field__edit-trigger {
+            flex: 0 0 auto;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: #2067b0;
+            font: inherit;
+            font-size: 13px;
+            line-height: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 1px dashed #2067b0;
+            white-space: nowrap;
+        }
+        .contract-field__edit-trigger:hover {
+            border-bottom-style: solid;
         }
         .contract-field__control {
             width: 100%;
@@ -109,6 +130,50 @@ use yii\bootstrap5\Html;
         }
         .contract-field__select.is-empty {
             color: #a8adb4;
+        }
+        .contract-field__actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .contract-field__btn {
+            height: 28px;
+            padding: 0 12px;
+            border-radius: 2px;
+            border: 1px solid transparent;
+            font: inherit;
+            font-size: 13px;
+            line-height: 26px;
+            cursor: pointer;
+        }
+        .contract-field__btn:disabled {
+            opacity: .6;
+            cursor: default;
+        }
+        .contract-field__btn--save {
+            background: #3bc8f5;
+            border-color: #3bc8f5;
+            color: #fff;
+        }
+        .contract-field__btn--save:hover:not(:disabled) {
+            background: #3eddff;
+        }
+        .contract-field__btn--cancel {
+            background: #fff;
+            border-color: #c6cdd3;
+            color: #525c69;
+        }
+        .contract-field__btn--cancel:hover:not(:disabled) {
+            border-color: #a8adb4;
+        }
+        .contract-field__inline-error {
+            margin-top: 6px;
+            color: #ff5752;
+            font-size: 12px;
+            line-height: 16px;
+        }
+        .is-hidden {
+            display: none !important;
         }
     </style>
 </head>
