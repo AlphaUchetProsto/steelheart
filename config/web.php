@@ -54,6 +54,9 @@ $config = [
         'entity-export' => [
             'class' => 'app\modules\entity_export\Module',
         ],
+        'contract-field' => [
+            'class' => 'app\modules\contract_field\Module',
+        ],
     ],
     'components' => [
         'request' => [
@@ -110,6 +113,8 @@ $config = [
                 '/<module:no-interface-app>/<action>' => 'no-interface-app/main/<action>',
                 '/<module:products>' => 'products/main/index',
                 '/<module:products>/<action>' => 'products/main/<action>',
+                '/<module:contract-field>' => 'contract-field/main/index',
+                '/<module:contract-field>/<action>' => 'contract-field/main/<action>',
                 '/<module:hh>' => 'hh/main/index',
                 '/<module:hh>/<action>' => 'hh/main/<action>',
                 '/<module:processor-post>/<controller>/<action>' => '/processor-post/<controller>/<action>',
