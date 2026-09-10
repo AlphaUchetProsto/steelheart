@@ -18,7 +18,7 @@ class UserfieldTypeService
     {
         $title = 'Договор';
         $description = 'Выбор договора, привязанного к компании';
-        $height = 36;
+        $height = 40;
 
         if ($this->isRegistered(Module::USER_TYPE_ID)) {
             return $this->provider->update(

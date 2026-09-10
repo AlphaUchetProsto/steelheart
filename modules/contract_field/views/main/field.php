@@ -16,7 +16,6 @@ if ($state->selectedContract) {
         : ('Договор #' . $state->selectedContract->id);
 }
 
-$displayTitle = $selectedTitle ?: 'Не выбран';
 $frameHeight = $isEdit ? 36 : 20;
 $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
 ?>
@@ -28,40 +27,23 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
             <div class="contract-field__empty">Нет договоров, привязанных к компании</div>
         <?php else: ?>
             <div class="contract-field__control">
-                <div
-                    class="ui-select<?= $selectedId ? '' : ' is-empty' ?>"
+                <select
                     id="contract-field-select"
-                    data-value="<?= $selectedId ? (int)$selectedId : '' ?>"
+                    class="contract-field__select<?= $selectedId ? '' : ' is-empty' ?>"
                 >
-                    <button type="button" class="ui-select__value" id="contract-field-toggle">
-                        <span class="ui-select__text" id="contract-field-text"><?= Html::encode($displayTitle) ?></span>
-                        <span class="ui-select__arrow" aria-hidden="true"></span>
-                    </button>
-                    <ul class="ui-select__dropdown" id="contract-field-dropdown">
-                        <li>
-                            <button
-                                type="button"
-                                class="ui-select__option<?= !$selectedId ? ' is-selected' : '' ?>"
-                                data-value=""
-                                data-title="Не выбран"
-                            >Не выбран</button>
-                        </li>
-                        <?php foreach ($state->contracts as $contract): ?>
-                            <?php
-                            $title = $contract->title !== '' ? $contract->title : ('Договор #' . $contract->id);
-                            $isSelected = $selectedId === $contract->id;
-                            ?>
-                            <li>
-                                <button
-                                    type="button"
-                                    class="ui-select__option<?= $isSelected ? ' is-selected' : '' ?>"
-                                    data-value="<?= (int)$contract->id ?>"
-                                    data-title="<?= Html::encode($title) ?>"
-                                ><?= Html::encode($title) ?></button>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
+                    <option value="">Не выбран</option>
+                    <?php foreach ($state->contracts as $contract): ?>
+                        <?php
+                        $title = $contract->title !== '' ? $contract->title : ('Договор #' . $contract->id);
+                        ?>
+                        <option
+                            value="<?= (int)$contract->id ?>"
+                            <?= $selectedId === $contract->id ? 'selected' : '' ?>
+                        >
+                            <?= Html::encode($title) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
         <?php endif; ?>
     <?php else: ?>
@@ -82,27 +64,15 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
 <script src="//api.bitrix24.com/api/v1/"></script>
 <script>
     BX24.init(function () {
-        var closedHeight = <?= (int)$frameHeight ?>;
+        var frameHeight = <?= (int)$frameHeight ?>;
         var contractEntityTypeId = <?= (int)$contractEntityTypeId ?>;
 
-        function resizeFrame(height) {
-            BX24.resizeWindow('100%', Math.max(height || closedHeight, closedHeight));
+        function resizeFrame() {
+            BX24.resizeWindow('100%', frameHeight);
         }
 
-        function measureAndResize() {
-            var root = document.getElementById('contract-field-root');
-            var height = closedHeight;
-
-            if (root) {
-                height = Math.max(Math.ceil(root.getBoundingClientRect().height), closedHeight);
-            }
-
-            resizeFrame(height);
-        }
-
-        measureAndResize();
-        setTimeout(measureAndResize, 30);
-        setTimeout(measureAndResize, 120);
+        resizeFrame();
+        setTimeout(resizeFrame, 50);
 
         var link = document.getElementById('contract-field-link');
         if (link) {
@@ -120,13 +90,17 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
             });
         }
 
-        var root = document.getElementById('contract-field-select');
-        var toggle = document.getElementById('contract-field-toggle');
-        var dropdown = document.getElementById('contract-field-dropdown');
-        var textNode = document.getElementById('contract-field-text');
-
-        if (!root || !toggle || !dropdown || !textNode) {
+        var select = document.getElementById('contract-field-select');
+        if (!select) {
             return;
+        }
+
+        function applyEmptyClass() {
+            if (select.value) {
+                select.classList.remove('is-empty');
+            } else {
+                select.classList.add('is-empty');
+            }
         }
 
         function setFieldValue(value) {
@@ -140,60 +114,11 @@ $modeClass = $isEdit ? 'contract-field--edit' : 'contract-field--view';
             BX24.placement.call('setValue', String(value));
         }
 
-        function setSelected(value, title) {
-            root.setAttribute('data-value', value || '');
-            textNode.textContent = title || 'Не выбран';
-
-            if (value) {
-                root.classList.remove('is-empty');
-            } else {
-                root.classList.add('is-empty');
-            }
-
-            dropdown.querySelectorAll('.ui-select__option').forEach(function (option) {
-                var selected = option.getAttribute('data-value') === String(value || '');
-                option.classList.toggle('is-selected', selected);
-            });
-
-            setFieldValue(value || '');
-        }
-
-        function openList() {
-            root.classList.add('is-open');
-            measureAndResize();
-        }
-
-        function closeList() {
-            root.classList.remove('is-open');
-            resizeFrame(closedHeight);
-        }
-
-        toggle.addEventListener('click', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            if (root.classList.contains('is-open')) {
-                closeList();
-            } else {
-                openList();
-            }
+        select.addEventListener('change', function () {
+            applyEmptyClass();
+            setFieldValue(select.value);
         });
 
-        dropdown.addEventListener('click', function (event) {
-            var option = event.target.closest('.ui-select__option');
-            if (!option) {
-                return;
-            }
-
-            event.preventDefault();
-            setSelected(option.getAttribute('data-value'), option.getAttribute('data-title'));
-            closeList();
-        });
-
-        document.addEventListener('click', function (event) {
-            if (!root.contains(event.target)) {
-                closeList();
-            }
-        });
+        applyEmptyClass();
     });
 </script>
